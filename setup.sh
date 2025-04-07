@@ -4,7 +4,11 @@ BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+# Source the Docker Compose utility functions
+source "$(dirname "$0")/scripts/docker_compose_utils.sh"
 
+# Store the appropriate docker compose command
+DOCKER_COMPOSE_CMD=$(get_docker_compose_cmd)
 
 echo -e "ADVERTISED_URL: ${BLUE}$1${NC}";
 [ -z "$1" ] && echo "ADVERTISED_URL not set. Enter the host url you would like to advertise." && exit;
@@ -62,14 +66,14 @@ done
 echo -e "${GREEN}Initialization of Setup complete!${NC}";
 
 echo -e "${YLW}Bringing up the database....${NC}";
-docker-compose up -d database cache elasticsearch
+$DOCKER_COMPOSE_CMD up -d database cache elasticsearch
 
 sleep 50
 
 echo -e "${YLW}Bringing up the management service....${NC}";
 
-docker-compose up -d  management
+$DOCKER_COMPOSE_CMD up -d  management
 
 sleep  20
 
-echo -e "${GREEN}run: 'docker-compose up -d' to start xpresso.${NC}";
+echo -e "${GREEN}run: '$DOCKER_COMPOSE_CMD up -d' to start xpresso.${NC}";

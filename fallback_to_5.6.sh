@@ -1,3 +1,9 @@
+# Source the Docker Compose utility functions
+source "$(dirname "$0")/scripts/docker_compose_utils.sh"
+
+# Store the appropriate docker compose command
+DOCKER_COMPOSE_CMD=$(get_docker_compose_cmd)
+
 #Pre Step   changes  image of Mysql back to 5.6  in docker-compose.yml
 
 if [ ! -d ./mysql_backup ] 
@@ -8,9 +14,9 @@ fi
 
 #step 1  Stopping the database  if it is already running
 echo " Stop the database if running"
-docker-compose  stop database
+$DOCKER_COMPOSE_CMD stop database
 
-docker-compose rm -f database
+$DOCKER_COMPOSE_CMD rm -f database
 
 
 #Step 2 Remove the data/mysql/* 
@@ -28,15 +34,15 @@ cp -f old_configs/nginx.conf ./etc/
 cp -f old_configs/1-user.sql initializers/docker-entrypoint-initdb.d/1-user.sql
 
 #start the database container
-docker-compose up -d database
+$DOCKER_COMPOSE_CMD up -d database
 
 echo "Sleeping for 30 seconds"
 sleep 30
 
 # Stop the containers 
 echo " Stopping all containers" 
-docker-compose stop 
+$DOCKER_COMPOSE_CMD stop 
 
 echo "********************************************"
 echo "Change the  TAG in .env file as v20.6"
-echo "After this change  bring up the containers using docker-compose up -d" 
+echo "After this change  bring up the containers using $DOCKER_COMPOSE_CMD up -d"
